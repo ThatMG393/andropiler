@@ -1,0 +1,5 @@
+# trap 'Terminating...' SIGTERM SIGINT exit
+
+# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$( pwd )"
+java -jar $DIR/main/app-*.jar $@

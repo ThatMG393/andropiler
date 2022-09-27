@@ -1,0 +1,61 @@
+plugins {
+    // Apply the application plugin to add support for building a CLI application in Java.
+    id 'java'
+    id 'application'
+    id 'com.github.gmazzo.buildconfig' version '3.1.0'
+}
+
+// name 'andropiler'
+group 'com.thatmg393'
+version '0.1'
+
+repositories {
+    // Repositories to search for the dependencies
+    mavenCentral()
+}
+
+dependencies {
+    // Put your dependencies here
+    implementation 'org.json:json:20220320'
+    implementation 'commons-io:commons-io:2.11.0'
+    // implementation 'commons-cli:commons-cli:1.5.0'
+    implementation 'info.picocli:picocli:4.6.3'
+    
+}
+
+buildConfig {
+    def flavor = "ALPHA"
+    // Fix for numbers getting replaced by underscores
+    packageName("${project.group.toString()}.${rootProject.name.toString()}")
+
+    buildConfigField('String', 'APP_NAME', "\"${rootProject.name.toString()}\"")
+    buildConfigField('String', 'APP_FLAVOR', "\"${flavor}\"")
+    buildConfigField('String', 'APP_VERSION', "\"${project.version.toString()}\" + \"-\" + APP_FLAVOR")
+    buildConfigField('String', 'BUILD_TIME', "69-69-6969")
+    
+    // "java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault()).truncatedTo(java.time.temporal.ChronoUnit.SECONDS).format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(\"T\", \"_\").replace(\".\", \"-\")")
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'com.thatmg393.andropiler.App'
+}
+
+run {
+    standardInput = System.in 
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    manifest {
+        attributes 'Main-Class': 'com.thatmg393.andropiler.App'
+    }
+    // archiveClassifier = "all" 
+    // TODO: Maybe add a archive that already has AAPT2 so the archive is fully offline.
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+

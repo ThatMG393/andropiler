@@ -1,0 +1,2 @@
+rootProject.name = 'andropiler'
+include('app')
