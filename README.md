@@ -1,7 +1,8 @@
 # andropiler
-
 A ported version of [android-compiler](https://github.com/ThatMG393/android-compiler) to Java.
 
-I was having trouble with the bash script, it kept having weird issues. So I rewrote it in Java.
-
+I ported android-compiler to Java because I was having trouble with the bash script, it kept having weird issues.
 Please make an Issue if there is a bug or something else.
+
+# Why I made this
+So you can compile Android Projects on Android without having to download AAPT2 and pass `-Pandroid.aapt2FromMavenOverride` over and over again. 
