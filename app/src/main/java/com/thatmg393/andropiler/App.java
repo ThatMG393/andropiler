@@ -11,7 +11,20 @@ import picocli.CommandLine.ParseResult;
 
 @Command(name = "./" + BuildConfig.APP_NAME,
     description = "Compile Android Projects on ANDROID!",
-    version = "andropiler " + BuildConfig.APP_VERSION_FULL,
+    version = "\n" // Based on 'gradle --version' output
+    + "------------------------------------------------------------\n"
+    + BuildConfig.APP_NAME + " v" + BuildConfig.APP_VERSION_DISPLAY + "\n"
+    + "------------------------------------------------------------\n"
+    + "\n"
+    + "Compiled On: " + BuildConfig.APP_BUILD_TIME_FORMATTED + "\n"
+    + "Built On: " + BuildConfig.APP_BUILD_PLATFORM + "\n"
+    + "\n"
+    + "Build Flavor: " + BuildConfig.APP_BUILD_FLAVOR + "\n"
+    + "Version: " + BuildConfig.APP_VERSION_FULL + "\n"
+    + "\n"
+    + "Git Commit Hash: " + BuildConfig.APP_BUILD_COMMIT_HASH + "\n"
+    + "Git Commit Tag: " + BuildConfig.APP_BUILD_COMMIT_TAG + "\n"
+    + "Git Commit Count: " + BuildConfig.APP_BUILD_COMMIT_COUNT + "\n",
     mixinStandardHelpOptions = true)
 public class App {
     private Logger LOGGER;

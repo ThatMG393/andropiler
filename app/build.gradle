@@ -9,7 +9,7 @@ def majorVersion = "0"
 def flavor = "alpha"
 // name 'andropiler'
 group 'com.thatmg393'
-version "${majorVersion}.${getMinorVersionCode()}"
+version "${majorVersion}.${getCommitCount()}"
 
 repositories {
     // Repositories to search for the dependencies
@@ -32,12 +32,15 @@ buildConfig {
     packageName("${project.group.toString()}.${rootProject.name}")
 
     buildConfigField('String', 'APP_NAME', "\"${rootProject.name}\"")
-    buildConfigField('String', 'APP_VERSION_FULL', "\"${flavor}_${project.version}-${getLatestCommitTag()}-${build_time}\"")
+    buildConfigField('String', 'APP_VERSION_FULL', "\"${flavor}_${project.version}-${getLatestCommitTag()}-build_${build_time}\"")
     buildConfigField('String', 'APP_VERSION_DISPLAY', "\"${project.version}-${flavor}\"")
-    buildConfigField('String', 'APP_VERSION_FLAVOR', "\"${flavor}\"")
+    buildConfigField('String', 'APP_BUILD_FLAVOR', "\"${flavor}\"")
     buildConfigField('String', 'APP_BUILD_TIME', "\"${build_time}\"")
+    buildConfigField('String', 'APP_BUILD_TIME_FORMATTED', "\"${getDateFormatted()}\"")
+    buildConfigField('String', 'APP_BUILD_COMMIT_HASH', "\"${getLatestCommitHash()}\"")
     buildConfigField('String', 'APP_BUILD_COMMIT_TAG', "\"${getLatestCommitTag()}\"")
-
+    buildConfigField('String', 'APP_BUILD_COMMIT_COUNT', "\"${getCommitCount()}\"")
+    buildConfigField('String', 'APP_BUILD_PLATFORM', "\"${getBuildPlatform()}\"")
 }
 
 application {
@@ -72,33 +75,61 @@ jar {
     }
 }
 
-def getMinorVersionCode() {
+def getLatestCommitHash() {
     def baos = new ByteArrayOutputStream()
-    def baos2 = new ByteArrayOutputStream()
     exec { // Get latest commit hash
         commandLine "git", "log", "-1", "--format=%H"
-        standardOutput = baos2
+        standardOutput = baos
     }
+    return baos.toString().trim()
+}
+
+def getCommitCount() {
+    def baos = new ByteArrayOutputStream() 
     exec { // Get commit count
-        commandLine "git", "rev-list", "--count", "${baos2.toString().trim()}"
+        commandLine "git", "rev-list", "--count", "${getLatestCommitHash()}"
         standardOutput = baos
     }
     return baos.toString().trim()
 }
 
 def getLatestCommitTag() {
-    def baos = new ByteArrayOutputStream()
-    def baos2 = new ByteArrayOutputStream()
-    exec { // Get latest commit hash
-        commandLine "git", "log", "-1", "--format=%H"
-        standardOutput = baos2
-    }
+    def baos = new ByteArrayOutputStream() 
     exec { // Get commit tag
-        commandLine "git", "rev-parse", "--short", "${baos2.toString().trim()}"
+        commandLine "git", "rev-parse", "--short", "${getLatestCommitHash()}"
         standardOutput = baos
     }
     return baos.toString().trim()
 }
+
+def getBuildPlatform() {
+    def baos = new ByteArrayOutputStream()
+    try {
+        // println("Getting OS...")
+        exec {
+            commandLine "uname", "-srmo"
+            standardOutput = baos
+        }
+        return baos.toString().trim()
+    } catch (Exception e) {
+        // println("Hmmmm, 'uname' not found... Let's try 'ver'")
+        try {
+            exec {
+                commandLine "ver"
+                standardOutput = baos
+            }
+            return baos.toString().trim()
+        } catch (Exception e2) {
+            println("Failed to get OS!")
+        }
+    }
+    return "Unknown OS"
+}
+
 def getDate() {
-    return "build_" + new Date().format("yyyyMMddHHmmss")
+    return new Date().format("yyyyMMddHHmmss")
+}
+
+def getDateFormatted() {
+    return new Date().format("yyyy-MM-dd HH:mm:ss z")
 }
