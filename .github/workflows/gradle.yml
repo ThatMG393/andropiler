@@ -33,5 +33,4 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
-          name: release
           path: dist/andropiler.zip
