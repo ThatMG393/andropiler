@@ -5,9 +5,11 @@ plugins {
     id 'com.github.gmazzo.buildconfig' version '3.1.0'
 }
 
+def majorVersion = "0"
+def flavor = "alpha"
 // name 'andropiler'
 group 'com.thatmg393'
-version '0.1'
+version "${majorVersion}.${getMinorVersionCode()}"
 
 repositories {
     // Repositories to search for the dependencies
@@ -24,18 +26,18 @@ dependencies {
 }
 
 buildConfig {
-    def flavor = "ALPHA"
     def build_time = getDate() // Fix for Annotation error.
 
     // Fix for numbers getting replaced by underscores
-    packageName("${project.group.toString()}.${rootProject.name.toString()}")
+    packageName("${project.group.toString()}.${rootProject.name}")
 
-    buildConfigField('String', 'APP_NAME', "\"${rootProject.name.toString()}\"")
-    buildConfigField('String', 'APP_FLAVOR', "\"${flavor}\"")
-    buildConfigField('String', 'APP_VERSION', "\"${project.version.toString()}\" + \"-\" + APP_FLAVOR")
-    buildConfigField('String', 'BUILD_TIME', "\"${build_time}\"")
-    
-    // "java.time.ZonedDateTime.now(java.time.ZoneId.systemDefault()).truncatedTo(java.time.temporal.ChronoUnit.SECONDS).format(java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(\"T\", \"_\").replace(\".\", \"-\")")
+    buildConfigField('String', 'APP_NAME', "\"${rootProject.name}\"")
+    buildConfigField('String', 'APP_VERSION_FULL', "\"${flavor}_${project.version}-${getLatestCommitTag()}-${build_time}\"")
+    buildConfigField('String', 'APP_VERSION_DISPLAY', "\"${project.version}-${flavor}\"")
+    buildConfigField('String', 'APP_VERSION_FLAVOR', "\"${flavor}\"")
+    buildConfigField('String', 'APP_BUILD_TIME', "\"${build_time}\"")
+    buildConfigField('String', 'APP_BUILD_COMMIT_TAG', "\"${getLatestCommitTag()}\"")
+
 }
 
 application {
@@ -51,16 +53,52 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     
     manifest {
+        attributes 'Package-Title': "${rootProject.name}"
+        attributes 'Package-Version': "${project.version}"
+        attributes 'Package-Vendor': 'ThatMG393'
+        attributes 'Built-By': 'ThatMG393'
+        attributes 'Build-Jdk': '17-internal'
         attributes 'Main-Class': 'com.thatmg393.andropiler.App'
+        attributes 'Created-By': 'Gradle 7.2 [Java 17-internal (Oracle Corporation)]'
+        attributes 'Specification-Title': "${rootProject.name}"
+        attributes 'Specification-Version': "${project.version}"
+        attributes 'Specification-Vendor': 'ThatMG393'
     }
     // archiveClassifier = "all" 
-    // TODO: Maybe add a archive that already has AAPT2 so the archive is fully offline.
+    // TODO: Maybe add a archive that already has AAPT2 so the archive doesnt download AAPT2. (Technically faster.)
     from {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
+def getMinorVersionCode() {
+    def baos = new ByteArrayOutputStream()
+    def baos2 = new ByteArrayOutputStream()
+    exec { // Get latest commit hash
+        commandLine "git", "log", "-1", "--format=%H"
+        standardOutput = baos2
+    }
+    exec { // Get commit count
+        commandLine "git", "rev-list", "--count", "${baos2.toString().trim()}"
+        standardOutput = baos
+    }
+    return baos.toString().trim()
+}
+
+def getLatestCommitTag() {
+    def baos = new ByteArrayOutputStream()
+    def baos2 = new ByteArrayOutputStream()
+    exec { // Get latest commit hash
+        commandLine "git", "log", "-1", "--format=%H"
+        standardOutput = baos2
+    }
+    exec { // Get commit tag
+        commandLine "git", "rev-parse", "--short", "${baos2.toString().trim()}"
+        standardOutput = baos
+    }
+    return baos.toString().trim()
+}
 def getDate() {
-    return new Date().format("yyyyMMdd")
+    return "build_" + new Date().format("yyyyMMddHHmmss")
 }

@@ -2,7 +2,7 @@ package com.thatmg393.andropiler;
 
 public class Logger {
     private boolean verbose = false;
-    public int DELAY = 150;
+    public int DELAY = 20;
 
     public Logger(boolean verbose) {
         this.verbose = verbose;
@@ -32,9 +32,11 @@ public class Logger {
     }
 
     public void success(String message) {
+        /*
         System.out.print("\033[1A\r\033[J");
         try { Thread.sleep(30); }
         catch (InterruptedException ie) { }
+        */
         System.out.println(Col.GREEN + "[S] " + message + Col.DEF);
         try { Thread.sleep(DELAY); }
         catch (InterruptedException ie) { }
