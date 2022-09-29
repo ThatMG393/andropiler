@@ -23,7 +23,7 @@ jobs:
         with:
           java-version: 17
 
-      - name: Grant execute permission for make.sg
+      - name: Grant execute permission for make.sh
         run: chmod +x make.sh
 
       - name: Build Application
@@ -33,4 +33,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
-          path: dist/andropiler.zip
+          name: release
+          path: dist/release
