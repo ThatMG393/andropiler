@@ -33,5 +33,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
         with:
-          name: build
-          path: dist/build
+          name: debug
+          path: dist/build/debug

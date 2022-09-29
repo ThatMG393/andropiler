@@ -6,7 +6,7 @@ plugins {
 }
 
 def majorVersion = "0"
-def flavor = "alpha"
+def flavor = "debug"
 def built_by = "ThatMG393"
 // name 'andropiler'
 group 'com.thatmg393'
