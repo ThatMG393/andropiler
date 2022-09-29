@@ -17,6 +17,7 @@ import picocli.CommandLine.ParseResult;
     + "------------------------------------------------------------\n"
     + "\n"
     + "Compiled On: " + BuildConfig.APP_BUILD_TIME_FORMATTED + "\n"
+    + "Compiled By: " + BuildConfig.APP_BUILD_VENDOR + "\n"
     + "Built On: " + BuildConfig.APP_BUILD_PLATFORM + "\n"
     + "\n"
     + "Build Flavor: " + BuildConfig.APP_BUILD_FLAVOR + "\n"

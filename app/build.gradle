@@ -7,6 +7,7 @@ plugins {
 
 def majorVersion = "0"
 def flavor = "alpha"
+def built_by = "ThatMG393"
 // name 'andropiler'
 group 'com.thatmg393'
 version "${majorVersion}.${getCommitCount()}"
@@ -41,6 +42,7 @@ buildConfig {
     buildConfigField('String', 'APP_BUILD_COMMIT_TAG', "\"${getLatestCommitTag()}\"")
     buildConfigField('String', 'APP_BUILD_COMMIT_COUNT', "\"${getCommitCount()}\"")
     buildConfigField('String', 'APP_BUILD_PLATFORM', "\"${getBuildPlatform()}\"")
+    buildConfigField('String', 'APP_BUILD_VENDOR', "\"${built_by}\"")
 }
 
 application {
@@ -58,14 +60,14 @@ jar {
     manifest {
         attributes 'Package-Title': "${rootProject.name}"
         attributes 'Package-Version': "${project.version}"
-        attributes 'Package-Vendor': 'ThatMG393'
-        attributes 'Built-By': 'ThatMG393'
+        attributes 'Package-Vendor': "${built_by}"
+        attributes 'Built-By': "${built_by}"
         attributes 'Build-Jdk': '17-internal'
         attributes 'Main-Class': 'com.thatmg393.andropiler.App'
         attributes 'Created-By': 'Gradle 7.2 [Java 17-internal (Oracle Corporation)]'
         attributes 'Specification-Title': "${rootProject.name}"
         attributes 'Specification-Version': "${project.version}"
-        attributes 'Specification-Vendor': 'ThatMG393'
+        attributes 'Specification-Vendor': "${built_by}"
     }
     // archiveClassifier = "all" 
     // TODO: Maybe add a archive that already has AAPT2 so the archive doesnt download AAPT2. (Technically faster.)
