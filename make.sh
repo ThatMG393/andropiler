@@ -33,8 +33,9 @@ start() {
     cp andropiler $BLD_FLDR
 
     echo ""
-    echo "Installing 'zip'..."
-    apt install zip # Install ZIP
+    echo "Skipping 'zip' install."
+    # echo "Installing 'zip'..."
+    # apt install zip # Install ZIP (Not supported on Github Actions)
 
     cd $BLD_FLDR
     echo ""
