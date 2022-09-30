@@ -6,13 +6,19 @@ I ported android-compiler to Java because I was having trouble with the bash scr
 Please make an Issue if there is a bug or something else.
 
 # Why I made this
-So you can compile Android Projects on Android without having to download AAPT2 for your CPU Architecture
-and pass `-Pandroid.aapt2FromMavenOverride` over and over again.
+So you can compile Android Projects on Android without having to download AAPT2 
+for your CPU Architecture and pass `-Pandroid.aapt2FromMavenOverride` over and over again.
 
 # How it works
 This is basically a wrapper for Gradle and GradleW.
 
-# Build requirements
-- Java 17
-- Gradle 7.5.1
-And that's it.
+# How to build
+Requirements:
+    - Java 17
+    - Gradle 7.5.1
+
+Open a terminal then do
+`bash make.sh` 
+then it will automatically compile.
+
+Do `make.sh -h` for more options.

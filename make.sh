@@ -1,4 +1,11 @@
 
+# Welcome to make.sh v7!
+# 
+# Features:
+# Arguments support (delimeter support since 'v6')
+# Auto-detect project flavor
+# Pass custom Gradle arguments
+
 # shopt -s extglob # Much more powerful pattern matching
 
 infoClr="\033[1;34m"
@@ -29,25 +36,36 @@ getFlavor() {
     fi
 }
 
-GEN_FLDR=app/build/libs
+setVars() {
+    getFlavor
+    readonly GEN_FLDR=app/build/libs
 
-BLD_FLDR="dist/build/$FLAVOR"
-BLD_MAIN_FLDR="$BLD_FLDR/main"
+    readonly BLD_FLDR="dist/build/$FLAVOR"
+    readonly BLD_MAIN_FLDR="$BLD_FLDR/main"
 
-PKG_FLDR=dist/pkg
+    readonly PKG_FLDR=dist/pkg
+}
 
 # ARG VARS
 LIST_BUILDS=FALSE
 CLEAR_BUILDS=FALSE
 CLEAR_CACHE=FALSE
 CLEAR_PKG=FALSE
-
+DELIMETER_PRESENT=FALSE
 # ARG VARS END
 
 make() {
     info "Building..."
-    bash gradlew clean build
+    if [[ ! $# -gt 0 ]]; then
+        info "Launching Gradle with arguments: clean, build"
+        bash gradlew clean build
+    else
+        info "Launching Gradle with arguments: $*"
+        bash gradlew clean -q
+        bash gradlew $*
+    fi
 
+    if [ ! -f $GEN_FLDR/app-*.jar ]; then err "Gradle did not generate any jar files"; fi
     if [ -f $BLD_FLDR ]; then rm -rf $BLD_FLDR; fi
     if [ ! -f $BLD_MAIN_FLDR ]; then mkdir -p $BLD_MAIN_FLDR; fi
     if [ ! -f $PKG_FLDR ]; then mkdir -p $PKG_FLDR; fi
@@ -75,11 +93,19 @@ make() {
 }
 
 start() {
+    lw="\033[1;37m"
     if [[ "$LIST_BUILDS" = "TRUE" ]]; then
-        for builds in $PKG_FLDR/*; do 
-            info "$( echo $builds | grep -Po 'andropiler-[0-9].[0-9]*' )"
+        INDEX=1
+        for BUILDS in $PKG_FLDR/*; do
+            if [[ "$BUILDS" = "$PKG_FLDR/*" ]]; then
+                echo -e "${lw}No ZIP files has been found.${defClr}"
+                exit 0
+            fi
+            echo -e "${INDEX}: ${lw}$( echo $BUILDS | grep -Po 'andropiler-[0-9].[0-9]*' )${defClr}"
+            INDEX=$(expr $INDEX + 1)
         done
-        success "Done!"
+        exit 0
+        # success "Done!"
     elif [[ "$CLEAR_GEN" = "TRUE" ]]; then
         info "Clearing '${BLD_FLDR}'"
         rm -rfdv $BLD_FLDR
@@ -94,13 +120,15 @@ start() {
         success "Done!"
     fi
 
-    getFlavor
+    setVars
     set -e
+
     info "Making a '$FLAVOR' jar"
     make $*
 }
 
 usage() {
+    setVars
     lw='\033[1;37m'
     y='\033[0;33m'
     DISP="bash $0"
@@ -124,36 +152,79 @@ ${lw}Options:${defClr}
 
 POS_ARGS=()
 while [[ $# -gt 0 ]]; do
+    if [[ "$DELIMETER_PRESENT" = "TRUE" ]]; then # Anti delimeter duplication
+        if [[ "$1" = "--" ]]; then
+            POS_ARGS+=("$1")
+            shift # Shift past the impostor delimeter
+        fi
+    fi
+
     case "$1" in
         -h|--help)
-            usage
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then 
+                usage 
+            else
+                POS_ARGS+=("$1")
+                shift # past argument
+            fi
             ;;
         -v|--version)
-            echo "$0 v4 $(uname -m)"
-            exit 1
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then
+                echo "$0 v6 $(uname -m)"
+                exit 1
+            else
+                POS_ARGS+=("$1")
+                shift # past argument
+            fi
             ;;
         -l|--list)
-            LIST_BUILDS=TRUE
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then 
+                LIST_BUILDS=TRUE 
+            else
+                POS_ARGS+=("$1")
+            fi
             shift # past argument
             ;;
         -cc|--clear-cache)
-            CLEAR_GEN=TRUE
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then 
+                CLEAR_GEN=TRUE 
+            else
+                POS_ARGS+=("$1")
+            fi
             shift # past argument
             ;;
         -cb|--clear-build)
-            CLEAR_BUILD=TRUE
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then 
+                CLEAR_BUILD=TRUE 
+            else
+                POS_ARGS+=("$1")
+            fi
             shift # past argument
             ;;
         -ca|--clear-all)
-            CLEAR_ALL=TRUE
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then 
+                CLEAR_ALL=TRUE 
+            else 
+                POS_ARGS+=("$1")
+            fi
             shift # past argument
             ;;
+        --)
+            DELIMETER_PRESENT=TRUE
+            shift # past delimeter
+            ;;
         -*|--*)
-            echo -e "${errClr}Unknown option -- '$1'${defClr}"
-            usage
+            if [[ "$DELIMETER_PRESENT" = "FALSE" ]]; then
+                echo -e "${errClr}Unknown option -- '$1'${defClr}"
+                usage
+            else
+                POS_ARGS+=("$1")
+                shift
+            fi
             ;;
         *)
             POS_ARGS+=("$1")
+            shift # past argument
             ;;
     esac
 done
