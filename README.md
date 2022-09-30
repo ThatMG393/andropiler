@@ -14,8 +14,8 @@ This is basically a wrapper for Gradle and GradleW.
 
 # How to build
 Requirements:
-    - Java 17
-    - Gradle 7.5.1
+- Java 17
+- Gradle 7.5.1
 
 Open a terminal then do
 `bash make.sh` 
