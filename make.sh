@@ -93,6 +93,7 @@ make() {
 }
 
 start() {
+    setVars
     lw="\033[1;37m"
     if [[ "$LIST_BUILDS" = "TRUE" ]]; then
         INDEX=1
@@ -119,8 +120,6 @@ start() {
         rm -rfdv $BLD_FLDR $PKG_FLDR
         success "Done!"
     fi
-
-    setVars
     set -e
 
     info "Making a '$FLAVOR' jar"
