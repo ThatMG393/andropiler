@@ -23,8 +23,8 @@ jobs:
         with:
           java-version: 17
 
-      - name: Grant execute permission for make.sh
-        run: chmod +x make.sh
+      - name: Grant execute permission for make.sh and gradlew
+        run: chmod +x make.sh && chmod +x gradlew
 
       - name: Build Application
         run: bash make.sh
