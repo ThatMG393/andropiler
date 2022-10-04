@@ -29,6 +29,9 @@ jobs:
       - name: Build Application
         run: bash make.sh
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+
       - name: Upload build
         uses: actions/upload-artifact@v3
         if: ${{ !github.head_ref }}
