@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 public class Builder {
     private Logger LOGGER;
-    private String UNRECOVERABLE_DEATH = "Cannot recover, might die soo-";
+    private String UNRECOVERABLE_DEATH = "Fatal error occurred... Exiting...";
 
     private String OS_ARCH = System.getProperty("os.arch");
     private String PWD = getPWD();
@@ -45,8 +45,13 @@ public class Builder {
         // We check for OS
         boolean SUPPORTED = System.getProperty("os.name").toLowerCase().contains("linux");
         if (!SUPPORTED) LOGGER.err("Andropiler is only supported for Linux!", true);
+        
         // then the terminal
-        SUPPORTED = System.getenv("LD_PRELOAD").toLowerCase().contains("libtermux-exec");
+        try {
+            SUPPORTED = System.getenv("LD_PRELOAD").toLowerCase().contains("libtermux-exec");
+        } catch (Exception e) {
+            SUPPORTED = false;
+        }
         if (!SUPPORTED) LOGGER.err("Andropiler is only for Termux! ONLY FOR TERMUX! This is specifically designed for Android.", true);
     }
 

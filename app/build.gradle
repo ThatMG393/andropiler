@@ -8,7 +8,6 @@ plugins {
 def majorVersion = "0"
 def flavor = "debug"
 def built_by = "ThatMG393"
-// name 'andropiler'
 group 'com.thatmg393'
 version "${majorVersion}.${getCommitCount()}"
 
@@ -107,14 +106,12 @@ def getLatestCommitTag() {
 def getBuildPlatform() {
     def baos = new ByteArrayOutputStream()
     try {
-        // println("Getting OS...")
         exec {
             commandLine "uname", "-srmo"
             standardOutput = baos
         }
         return baos.toString().trim()
     } catch (Exception e) {
-        // println("Hmmmm, 'uname' not found... Let's try 'ver'")
         try {
             exec {
                 commandLine "ver"
